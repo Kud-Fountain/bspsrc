@@ -872,7 +872,9 @@ public class BspFile {
      * @return true if the lump type is available for this BSP file
      */
     public boolean canReadLump(LumpType type) {
-        return type.getBspVersion() == -1 || type.getBspVersion() <= version;
+        return type.getBspVersion()
+                .map(bspVersion -> bspVersion <= version)
+                .orElse(true);
     }
 
     /**

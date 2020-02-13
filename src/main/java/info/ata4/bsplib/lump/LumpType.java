@@ -10,6 +10,8 @@
 
 package info.ata4.bsplib.lump;
 
+import java.util.Optional;
+
 /**
  * Enumeration of lump types that are or were used in BSP files.
  *
@@ -104,17 +106,17 @@ public enum LumpType {
 
     /**
      * BSP version where this lump type has been used first.
-     * -1 for unknown/since time being.
+     * null for unknown/since time being.
      */
-    private final int bspVersion;
+    private final Integer bspVersion;
 
-    private LumpType(int index, int bspVersion) {
+    LumpType(int index, Integer bspVersion) {
         this.index = index;
         this.bspVersion = bspVersion;
     }
 
-    private LumpType(int index) {
-        this(index, -1);
+    LumpType(int index) {
+        this(index, null);
     }
 
     /**
@@ -126,7 +128,7 @@ public enum LumpType {
      */
     public static LumpType get(String name, int bspVersion) {
         for (LumpType type : values()) {
-            if (type.name().equals(name) && type.bspVersion <= bspVersion) {
+            if (type.name().equals(name) && type.getBspVersion().orElse(-1) <= bspVersion) {
                 return type;
             }
         }
@@ -153,7 +155,7 @@ public enum LumpType {
      */
     public static LumpType get(int index, int bspVersion) {
         for (LumpType type : values()) {
-            if (type.index == index && type.bspVersion <= bspVersion) {
+            if (type.index == index && type.getBspVersion().orElse(-1) <= bspVersion) {
                 return type;
             }
         }
@@ -183,11 +185,11 @@ public enum LumpType {
     /**
      * Returns the position of the lump type in the lump table.
      * If the fist use of this type is unknown or if it has been used for the
-     * time being, -1 is returned.
+     * time being, Optional.empty is returned.
      *
-     * @return lump table ID
+     * @return {@link Optional} of the lump table ID
      */
-    public int getBspVersion() {
-        return bspVersion;
+    public Optional<Integer> getBspVersion() {
+        return Optional.ofNullable(bspVersion);
     }
 }
