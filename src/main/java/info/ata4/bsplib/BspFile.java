@@ -12,18 +12,20 @@ package info.ata4.bsplib;
 
 import info.ata4.bsplib.app.SourceApp;
 import info.ata4.bsplib.app.SourceAppDB;
-import static info.ata4.bsplib.app.SourceAppID.*;
 import info.ata4.bsplib.io.LzmaUtil;
 import info.ata4.bsplib.lump.*;
+import info.ata4.bsplib.lump.contentreader.LumpContentReader;
 import info.ata4.bsplib.util.StringMacroUtils;
 import info.ata4.io.DataReader;
 import info.ata4.io.DataReaders;
 import info.ata4.io.DataWriter;
 import info.ata4.io.DataWriters;
-import static info.ata4.io.Seekable.Origin.CURRENT;
 import info.ata4.io.buffer.ByteBufferUtils;
 import info.ata4.io.util.XORUtils;
 import info.ata4.log.LogUtils;
+import org.apache.commons.io.EndianUtils;
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -34,8 +36,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.EndianUtils;
-import org.apache.commons.io.FilenameUtils;
+
+import static info.ata4.bsplib.app.SourceAppID.*;
+import static info.ata4.io.Seekable.Origin.CURRENT;
 
 /**
  * Low-level BSP file class for header and lump access.
@@ -875,6 +878,48 @@ public class BspFile {
         return type.getBspVersion()
                 .map(bspVersion -> bspVersion <= version)
                 .orElse(true);
+    }
+
+    public <T> T readLumpContent(LumpType lumpType, LumpContentReader<T> contentReader)
+            throws LumpContentReadException {
+        // don't try to read lumps that aren't supported
+        if (!canReadLump(lumpType)) {
+            throw new LumpContentReadException(String.format(
+                    "Lump %s isn't available in this bsp version. Lump: %s, BspFile: %d",
+                    lumpType,
+                    lumpType.getBspVersion(),
+                    version
+            ));
+        }
+
+        Lump lump = getLump(lumpType);
+        return readLumpContentInternal(lump, contentReader);
+
+    }
+
+    public <T> T readGameLumpContent(String sid, LumpContentReader<T> contentReader) throws LumpContentReadException {
+        GameLump gameLump = getGameLump(sid);
+        if (gameLump == null) {
+            throw new LumpContentReadException("Game lump " + sid + " isn't available");
+        }
+
+        return readLumpContentInternal(gameLump, contentReader);
+    }
+
+    private <T> T readLumpContentInternal(AbstractLump lump, LumpContentReader<T> contentReader)
+            throws LumpContentReadException {
+        // don't try to read empty lumps
+        if (lump.getLength() == 0) {
+            L.warning("Lump " + lump + " is empty");
+            return contentReader.nullData();
+        }
+
+        L.fine("Reading " + lump);
+        try {
+            return contentReader.read(lump.getBuffer());
+        } catch (Exception e) {
+            throw new LumpContentReadException("Error reading lump " + lump, e);
+        }
     }
 
     /**
