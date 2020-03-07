@@ -1,11 +1,9 @@
 package info.ata4.bsplib.lump.contentreader;
 
 import info.ata4.io.DataReader;
-import info.ata4.io.DataReaders;
 import info.ata4.log.LogUtils;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,11 +18,6 @@ public abstract class AbstractPacketContentReader<E> extends AbstractContentRead
     }
 
     @Override
-    public List<E> read(ByteBuffer buffer) throws IOException {
-        DataReader in = DataReaders.forByteBuffer(buffer);
-        return read(in);
-    }
-
     public List<E> read(DataReader in) throws IOException {
         final int packetCount = packetCount(Math.toIntExact(in.remaining()));
 

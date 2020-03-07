@@ -1,9 +1,10 @@
 package info.ata4.bsplib.lump.contentreader;
 
+import info.ata4.io.DataReader;
+
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public interface LumpContentReader<T> {
-    T read(ByteBuffer buffer) throws IOException;
+    T read(DataReader reader) throws IOException;
     T nullData();
 }

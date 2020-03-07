@@ -1,9 +1,9 @@
 package info.ata4.bsplib.lump.contentreader;
 
+import info.ata4.io.DataReader;
 import info.ata4.log.LogUtils;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 public class BytesContentReader extends AbstractContentReader<byte[]> {
@@ -15,9 +15,9 @@ public class BytesContentReader extends AbstractContentReader<byte[]> {
     }
 
     @Override
-    public byte[] read(ByteBuffer buffer) throws IOException {
-        byte[] data = new byte[buffer.remaining()];
-        buffer.get(data);
+    public byte[] read(DataReader in) throws IOException {
+        byte[] data = new byte[Math.toIntExact(in.remaining())];
+        in.readBytes(data);
 
         L.fine(String.format("%s: %d bytes read", getClass(), data.length));
         return data;

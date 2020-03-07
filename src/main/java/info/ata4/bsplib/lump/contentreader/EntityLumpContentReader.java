@@ -2,11 +2,10 @@ package info.ata4.bsplib.lump.contentreader;
 
 import info.ata4.bsplib.entity.Entity;
 import info.ata4.bsplib.io.EntityInputStream;
-import info.ata4.io.buffer.ByteBufferInputStream;
+import info.ata4.io.DataReader;
 import info.ata4.log.LogUtils;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,9 +24,9 @@ public class EntityLumpContentReader extends AbstractContentReader<List<Entity>>
     }
 
     @Override
-    public List<Entity> read(ByteBuffer buffer) throws IOException {
+    public List<Entity> read(DataReader in) throws IOException {
         List<Entity> entities = new ArrayList<>();
-        try (EntityInputStream entReader = new EntityInputStream(new ByteBufferInputStream(buffer))) {
+        try (EntityInputStream entReader = new EntityInputStream(in.stream())) {
             // allow escaped quotes for VTBM
             entReader.setAllowEscSeq(allowEscSeq);
 

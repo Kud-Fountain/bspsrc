@@ -3,12 +3,10 @@ package info.ata4.bsplib.lump.contentreader;
 import info.ata4.bsplib.struct.*;
 import info.ata4.bsplib.vector.Vector3f;
 import info.ata4.io.DataReader;
-import info.ata4.io.DataReaders;
 import info.ata4.log.LogUtils;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,9 +29,7 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
     }
 
     @Override
-    public StaticPropData read(ByteBuffer buffer) throws IOException {
-
-        DataReader in = DataReaders.forByteBuffer(buffer);
+    public StaticPropData read(DataReader in) throws IOException {
 
         List<String> staticPropDict = readDict(in);
 
