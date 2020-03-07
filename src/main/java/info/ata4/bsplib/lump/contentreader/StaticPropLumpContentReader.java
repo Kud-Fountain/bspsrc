@@ -8,6 +8,7 @@ import info.ata4.log.LogUtils;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -106,37 +107,37 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
         // calculate static prop struct size
         final int propStaticSize = (int) in.remaining() / propStaticCount;
 
-        Class<? extends DStaticProp> structClass = null;
+        Supplier<? extends DStaticProp> dStaticPropSupplier = null;
 
         // special cases where derivative lump structures are used
         switch (appId) {
             case THE_SHIP:
                 if (propStaticSize == 188) {
-                    structClass = DStaticPropV5Ship.class;
+                    dStaticPropSupplier = DStaticPropV5Ship::new;
                 }
                 break;
 
             case BLOODY_GOOD_TIME:
                 if (propStaticSize == 192) {
-                    structClass = DStaticPropV6BGT.class;
+                    dStaticPropSupplier = DStaticPropV6BGT::new;
                 }
                 break;
 
             case ZENO_CLASH:
                 if (propStaticSize == 68) {
-                    structClass = DStaticPropV7ZC.class;
+                    dStaticPropSupplier = DStaticPropV7ZC::new;
                 }
                 break;
 
             case DARK_MESSIAH:
                 if (propStaticSize == 136) {
-                    structClass = DStaticPropV6DM.class;
+                    dStaticPropSupplier = DStaticPropV6DM::new;
                 }
                 break;
 
             case DEAR_ESTHER:
                 if (propStaticSize == 76) {
-                    structClass = DStaticPropV9DE.class;
+                    dStaticPropSupplier = DStaticPropV9DE::new;
                 }
                 break;
 
@@ -145,9 +146,9 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
                 // they additional have scaling array saved before the static prop array
                 // Consequently, their v7 seems to be a standard DStaticPropV6 with an additional scaling array
                 if (sprpVersion == 6 && propStaticSize == 60) {
-                    structClass = DStaticPropV6VIN.class;
+                    dStaticPropSupplier = DStaticPropV6VIN::new;
                 } else if (sprpVersion == 7 && propStaticSize == 64) {
-                    structClass = DStaticPropV7VIN.class;
+                    dStaticPropSupplier = DStaticPropV7VIN::new;
                 }
                 break;
 
@@ -155,7 +156,7 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
                 // old L4D maps use v7 that is incompatible to the newer
                 // Source 2013 v7
                 if (sprpVersion == 7 && propStaticSize == 68) {
-                    structClass = DStaticPropV7L4D.class;
+                    dStaticPropSupplier = DStaticPropV7L4D::new;
                 }
                 break;
 
@@ -163,7 +164,7 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
                 // there's been a short period where TF2 used v7, which later
                 // became v10 in all Source 2013 game
                 if (sprpVersion == 7 && propStaticSize == 72) {
-                    structClass = DStaticPropV10.class;
+                    dStaticPropSupplier = DStaticPropV10::new;
                 }
                 break;
 
@@ -171,21 +172,21 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
                 //  (custom v10 for CS:GO, not compatible with Source 2013 v10)
                 //  CS:GO now uses v11  since the addition of uniform prop scaling
                 if (sprpVersion == 10) {
-                    structClass = DStaticPropV10CSGO.class;
+                    dStaticPropSupplier = DStaticPropV10CSGO::new;
                 } else if (sprpVersion == 11) {
-                    structClass = DStaticPropV11CSGO.class;
+                    dStaticPropSupplier = DStaticPropV11CSGO::new;
                 }
                 break;
 
             case BLACK_MESA:
                 // different structures used by Black Mesa
                 if (sprpVersion == 10 && propStaticSize == 72) {
-                    structClass = DStaticPropV10.class;
+                    dStaticPropSupplier = DStaticPropV10::new;
                 } else if (sprpVersion == 11) {
                     if (propStaticSize == 76) {
-                        structClass = DStaticPropV11lite.class;
+                        dStaticPropSupplier = DStaticPropV11lite::new;
                     } else if (propStaticSize == 80) {
-                        structClass = DStaticPropV11.class;
+                        dStaticPropSupplier = DStaticPropV11::new;
                     }
                 }
                 break;
@@ -193,7 +194,7 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
             case INSURGENCY:
                 // Insurgency is based of the csgo engine branch so we can use DStaticPropV10CSGO
                 if (sprpVersion == 10 && propStaticSize == 76) {
-                    structClass = DStaticPropV10CSGO.class;
+                    dStaticPropSupplier = DStaticPropV10CSGO::new;
                 }
                 break;
 
@@ -201,35 +202,39 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
                 // check for "lite" version of V11 struct in case it applies
                 // to a game other than BM (or BM wasn't detected/selected)
                 if (sprpVersion == 11 && propStaticSize == 76) {
-                    structClass = DStaticPropV11lite.class;
+                    dStaticPropSupplier = DStaticPropV11lite::new;
                 }
                 break;
         }
 
         // get structure class for the static prop lump version if it's not
         // a special case
-        if (structClass == null) {
+        if (dStaticPropSupplier == null) {
             try {
                 String className = DStaticProp.class.getName();
-                structClass = (Class<? extends DStaticProp>) Class.forName(className + "V" + sprpVersion);
+                Class<? extends DStaticProp> dStaticPropClass =
+                        (Class<? extends DStaticProp>) Class.forName(className + "V" + sprpVersion);
+                dStaticPropSupplier = () -> {
+                    try {
+                        return dStaticPropClass.getDeclaredConstructor().newInstance();
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException
+                            | NoSuchMethodException e) {
+                        throw new RuntimeException(e);
+                    }
+                };
             } catch (ClassNotFoundException ex) {
                 L.log(Level.WARNING, "Couldn't find static prop struct for version {0}", sprpVersion);
-                structClass = null;
             }
         }
 
         // check if the size is correct
-        if (structClass != null) {
-            try {
-                int propStaticSizeActual = structClass.getDeclaredConstructor().newInstance().getSize();
-                if (propStaticSizeActual != propStaticSize) {
-                    L.log(Level.WARNING, "Static prop struct size mismatch: expected {0}, got {1} (using {2})",
-                            new Object[]{propStaticSize, propStaticSizeActual, structClass.getSimpleName()});
-                    structClass = null;
-                }
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException
-                    | NoSuchMethodException e) {
-                throw new RuntimeException(e);
+        if (dStaticPropSupplier != null) {
+            DStaticProp dStaticProp = dStaticPropSupplier.get();
+            int propStaticSizeActual = dStaticProp.getSize();
+            if (propStaticSizeActual != propStaticSize) {
+                L.log(Level.WARNING, "Static prop struct size mismatch: expected {0}, got {1} (using {2})",
+                        new Object[]{propStaticSize, propStaticSizeActual, dStaticProp.getClass().getSimpleName()});
+                dStaticPropSupplier = null;
             }
         }
 
@@ -238,45 +243,24 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
         // (note: this will not work well if the struct is based on the V10
         // struct from the Source 2013 or the TF2 Source engine branches,
         // in which case the flags attribute will contain garbage data)
-        int numFillBytes;
-        if (structClass == null) {
+        if (dStaticPropSupplier == null) {
             L.log(Level.WARNING, "Falling back to static prop v4");
 
-            structClass = DStaticPropV4.class;
-            numFillBytes = propStaticSize - 56;
-        } else {
-            numFillBytes = 0;
+            dStaticPropSupplier = () -> new DStaticPropV4() {
+                @Override
+                public int getSize() {
+                    return propStaticSize;
+                }
+
+                @Override
+                public void read(DataReader in) throws IOException {
+                    super.read(in);
+                    in.seek(propStaticSize - super.getSize(), CURRENT);
+                }
+            };
         }
 
-
-        Class<? extends DStaticProp> finalStructClass = structClass;
-
-        AbstractPacketContentReader<? extends DStaticProp> staticPropReader =
-                new AbstractPacketContentReader<DStaticProp>() {
-            @Override
-            protected int packetCount(int remainingBytes) {
-                return propStaticCount;
-            }
-
-            @Override
-            protected DStaticProp readPacket(DataReader in) throws IOException {
-                try {
-                    DStaticProp sp = finalStructClass.getDeclaredConstructor().newInstance();
-                    sp.read(in);
-
-                    if (numFillBytes > 0) {
-                        in.seek(numFillBytes, CURRENT);
-                    }
-
-                    return sp;
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException
-                        | NoSuchMethodException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
-
-        return staticPropReader.read(in);
+        return DStructPacketsContentReader.forCount(dStaticPropSupplier, propStaticCount).read(in);
     }
 
     public static class StaticPropData {
