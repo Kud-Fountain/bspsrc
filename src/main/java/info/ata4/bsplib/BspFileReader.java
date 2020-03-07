@@ -14,13 +14,11 @@ import info.ata4.bsplib.app.SourceApp;
 import info.ata4.bsplib.app.SourceAppDB;
 import info.ata4.bsplib.app.SourceAppID;
 import info.ata4.bsplib.entity.Entity;
-import info.ata4.bsplib.lump.AbstractLump;
 import info.ata4.bsplib.lump.GameLump;
 import info.ata4.bsplib.lump.Lump;
 import info.ata4.bsplib.lump.LumpType;
 import info.ata4.bsplib.lump.contentreader.*;
 import info.ata4.bsplib.struct.*;
-import info.ata4.io.DataReader;
 import info.ata4.log.LogUtils;
 
 import java.io.IOException;
@@ -599,23 +597,6 @@ public class BspFileReader {
         }
 
         bspData.primVerts = readPacketLump(LumpType.LUMP_PRIMVERTS, DVertex::new);
-    }
-
-    private void lumpError(AbstractLump lump, IOException ex) {
-        L.log(Level.SEVERE, "Lump reading error in " + lump, ex);
-    }
-
-    /**
-     * Checks the byte buffer for remaining bytes. Should always be called when
-     * no remaining bytes are expected.
-     *
-     * @throws IOException if remaining bytes are found
-     */
-    private void checkRemaining(DataReader in) throws IOException {
-        if (in.hasRemaining()) {          
-            throw new IOException(in.remaining()
-                    + " bytes remaining");
-        }
     }
 
     public BspFile getBspFile() {
