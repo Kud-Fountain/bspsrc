@@ -280,9 +280,7 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
             }
         };
 
-        ByteBuffer buffer = ByteBuffer.allocate(Math.toIntExact(in.remaining()));
-        in.readBuffer(buffer);
-        return staticPropReader.read(buffer);
+        return staticPropReader.read(in);
     }
 
     public static class StaticPropData {
