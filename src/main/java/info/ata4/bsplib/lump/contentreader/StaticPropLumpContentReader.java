@@ -86,14 +86,7 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
 
     private List<Integer> readLeafs(DataReader in) throws IOException {
         final int propleaves = in.readInt();
-
-        List<Integer> staticPropLeaf = new ArrayList<>(propleaves);
-
-        for (int i = 0; i < propleaves; i++) {
-            staticPropLeaf.add(in.readUnsignedShort());
-        }
-
-        return staticPropLeaf;
+        return UShortPacketsContentReader.forCount(propleaves).read(in);
     }
 
     private List<? extends DStaticProp> readStaticProps(DataReader in) throws IOException {
