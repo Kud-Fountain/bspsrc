@@ -916,7 +916,9 @@ public class BspFile {
 
         L.fine("Reading " + lump);
         try {
-            return contentReader.read(DataReaders.forByteBuffer(lump.getBuffer()));
+            ByteBuffer buffer = lump.getBuffer();
+            buffer.rewind();
+            return contentReader.read(DataReaders.forByteBuffer(buffer));
         } catch (Exception e) {
             throw new LumpContentReadException("Error reading lump " + lump, e);
         }
