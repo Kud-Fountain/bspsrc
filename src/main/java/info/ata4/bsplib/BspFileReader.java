@@ -320,7 +320,6 @@ public class BspFileReader {
         Supplier<? extends DDispInfo> dStructSupplier = DDispInfo::new;
         int bspv = bspFile.getVersion();
 
-        // the lump version is useless most of the time, use the AppID instead
         switch (appID) {
             case VINDICTUS:
                 dStructSupplier = DDispInfoVin::new;
