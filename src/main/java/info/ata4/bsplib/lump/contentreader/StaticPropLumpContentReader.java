@@ -172,7 +172,8 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
                 break;
 
             case COUNTER_STRIKE_GO:
-                //  (custom v10 for CS:GO, not compatible with Source 2013 v10)  CS:GO now uses v11  since the addition of uniform prop scaling
+                //  (custom v10 for CS:GO, not compatible with Source 2013 v10)
+                //  CS:GO now uses v11  since the addition of uniform prop scaling
                 if (sprpVersion == 10) {
                     structClass = DStaticPropV10CSGO.class;
                 } else if (sprpVersion == 11) {
@@ -230,7 +231,8 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
                             new Object[]{propStaticSize, propStaticSizeActual, structClass.getSimpleName()});
                     structClass = null;
                 }
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException
+                    | NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -253,7 +255,8 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
 
         Class<? extends DStaticProp> finalStructClass = structClass;
 
-        AbstractPacketContentReader<? extends DStaticProp> staticPropReader = new AbstractPacketContentReader<DStaticProp>() {
+        AbstractPacketContentReader<? extends DStaticProp> staticPropReader =
+                new AbstractPacketContentReader<DStaticProp>() {
             @Override
             protected int packetCount(int remainingBytes) {
                 return propStaticCount;
@@ -270,7 +273,8 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
                     }
 
                     return sp;
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException
+                        | NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -292,7 +296,8 @@ public class StaticPropLumpContentReader extends AbstractContentReader<StaticPro
             this.staticProps = Collections.emptyList();
         }
 
-        public StaticPropData(List<String> staticPropDict, List<Integer> staticPropLeaf, List<? extends DStaticProp> staticProps) {
+        public StaticPropData(List<String> staticPropDict, List<Integer> staticPropLeaf,
+                              List<? extends DStaticProp> staticProps) {
             this.staticPropDict = Collections.unmodifiableList(staticPropDict);
             this.staticPropLeaf = Collections.unmodifiableList(staticPropLeaf);
             this.staticProps = Collections.unmodifiableList(staticProps);
