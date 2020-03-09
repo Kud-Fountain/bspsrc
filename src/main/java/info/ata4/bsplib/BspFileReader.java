@@ -406,8 +406,6 @@ public class BspFileReader {
                     return new String(stringData, offset, offsetNull - offset);
                 })
                 .collect(Collectors.toList());
-
-        L.log(Level.FINE, "Loading {0}", LumpType.LUMP_TEXDATA_STRING_DATA);
     }
 
     public void loadEntities() {
