@@ -100,16 +100,16 @@ public class BspFileReader {
     }
 
     private <E extends DStruct> List<E> readPacketLump(LumpType lumpType, Supplier<E> dStructSupplier) {
-        DStructPacketsContentReader<E> contentReader = DStructPacketsContentReader.forAllBytes(dStructSupplier);
+        DStructPacketsContentReader<E> contentReader = new DStructPacketsContentReader<>(dStructSupplier);
         return readLump(lumpType, contentReader);
     }
 
     private List<Integer> readIntegerPacketLump(LumpType lumpType) {
-        return readLump(lumpType, IntegerPacketsContentReader.forAllBytes());
+        return readLump(lumpType, new IntegerPacketsContentReader());
     }
 
     private List<Integer> readUShortPacketLump(LumpType lumpType) {
-        return readLump(lumpType, UShortPacketsContentReader.forAllBytes());
+        return readLump(lumpType, new UShortPacketsContentReader());
     }
 
     private <T> T readLump(LumpType lumpType, ContentReader<T> contentReader) {

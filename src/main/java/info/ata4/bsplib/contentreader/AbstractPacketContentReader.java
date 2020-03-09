@@ -19,8 +19,10 @@ public abstract class AbstractPacketContentReader<E> extends AbstractContentRead
 
     @Override
     public List<E> read(DataReader in) throws IOException {
-        final int packetCount = packetCount(Math.toIntExact(in.remaining()));
+        return read(in, Math.toIntExact(in.remaining() / packetSize()));
+    }
 
+    public List<E> read(DataReader in, int packetCount) throws IOException {
         List<E> packets = new ArrayList<>(packetCount);
 
         for (int i = 0; i < packetCount; i++) {
@@ -33,6 +35,6 @@ public abstract class AbstractPacketContentReader<E> extends AbstractContentRead
         return packets;
     }
 
-    protected abstract int packetCount(int remainingBytes);
+    protected abstract int packetSize();
     protected abstract E readPacket(DataReader in) throws IOException;
 }

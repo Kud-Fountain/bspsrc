@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
-public abstract class DStructPacketsContentReader<E extends DStruct> extends AbstractPacketContentReader<E> {
+public class DStructPacketsContentReader<E extends DStruct> extends AbstractPacketContentReader<E> {
 
     private static final Logger L = LogUtils.getLogger();
 
@@ -19,6 +19,11 @@ public abstract class DStructPacketsContentReader<E extends DStruct> extends Abs
     public DStructPacketsContentReader(Supplier<E> dStructSupplier) {
         this.dStructSupplier = Objects.requireNonNull(dStructSupplier);
         this.packetSize = dStructSupplier.get().getSize();
+    }
+
+    @Override
+    protected int packetSize() {
+        return packetSize;
     }
 
     @Override
@@ -33,23 +38,5 @@ public abstract class DStructPacketsContentReader<E extends DStruct> extends Abs
         }
 
         return dStruct;
-    }
-
-    public static <E extends DStruct> DStructPacketsContentReader<E> forAllBytes(Supplier<E> dStructSupplier) {
-        return new DStructPacketsContentReader<E>(dStructSupplier) {
-            @Override
-            protected int packetCount(int remainingBytes) {
-                return remainingBytes / packetSize;
-            }
-        };
-    }
-
-    public static <E extends DStruct> DStructPacketsContentReader<E> forCount(Supplier<E> dStructSupplier, int count) {
-        return new DStructPacketsContentReader<E>(dStructSupplier) {
-            @Override
-            protected int packetCount(int remainingBytes) {
-                return count;
-            }
-        };
     }
 }

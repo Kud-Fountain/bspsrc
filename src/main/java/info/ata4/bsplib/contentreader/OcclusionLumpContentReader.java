@@ -28,15 +28,15 @@ public class OcclusionLumpContentReader<DATA extends DOccluderData>
     @Override
     public OcclusionData<DATA> read(DataReader in) throws IOException {
         int dOcculderDataCount = in.readInt();
-        List<DATA> dOccluderData = DStructPacketsContentReader.forCount(dOccluderDataSupplier, dOcculderDataCount)
-                .read(in);
+        List<DATA> dOccluderData = new DStructPacketsContentReader<>(dOccluderDataSupplier)
+                .read(in, dOcculderDataCount);
 
         int dOccluderPolyCount = in.readInt();
-        List<DOccluderPolyData> dOccluderPolyData =
-                DStructPacketsContentReader.forCount(DOccluderPolyData::new, dOccluderPolyCount).read(in);
+        List<DOccluderPolyData> dOccluderPolyData = new DStructPacketsContentReader<>(DOccluderPolyData::new)
+                .read(in, dOccluderPolyCount);
 
         int vertexCount = in.readInt();
-        List<Integer> vertexIndices = IntegerPacketsContentReader.forCount(vertexCount).read(in);
+        List<Integer> vertexIndices = new IntegerPacketsContentReader().read(in, vertexCount);
 
         return new OcclusionData<>(dOccluderData, dOccluderPolyData, vertexIndices);
     }
