@@ -395,17 +395,8 @@ public class BspFileReader {
     private void loadTexDataStrings() {
 
         List<Integer> stringTableData = readIntegerPacketLump(LumpType.LUMP_TEXDATA_STRING_TABLE);
-        byte[] stringData = readLump(LumpType.LUMP_TEXDATA_STRING_DATA, new BytesContentReader());
-
-        bspData.texnames = stringTableData.stream()
-                .map(offset -> {
-                    int offsetNull = offset;
-                    while (offsetNull < stringData.length && stringData[offsetNull] != 0) {
-                        offsetNull++;
-                    }
-                    return new String(stringData, offset, offsetNull - offset);
-                })
-                .collect(Collectors.toList());
+        bspData.texnames = readLump(LumpType.LUMP_TEXDATA_STRING_DATA,
+                new TexdataStringDataLumpContentReader(stringTableData));
     }
 
     public void loadEntities() {
