@@ -112,7 +112,7 @@ public class BspFileReader {
         return readLump(lumpType, UShortPacketsContentReader.forAllBytes());
     }
 
-    private <T> T readLump(LumpType lumpType, LumpContentReader<T> contentReader) {
+    private <T> T readLump(LumpType lumpType, ContentReader<T> contentReader) {
         try {
             return bspFile.readLumpContent(lumpType, contentReader);
         } catch (LumpContentReadException e) {
@@ -125,7 +125,7 @@ public class BspFileReader {
         }
     }
 
-    private <T> T readGameLump(String lumpSid, LumpContentReader<T> contentReader) {
+    private <T> T readGameLump(String lumpSid, ContentReader<T> contentReader) {
         try {
             return bspFile.readGameLumpContent(lumpSid, contentReader);
         } catch (LumpContentReadException e) {

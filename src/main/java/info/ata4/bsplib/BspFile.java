@@ -12,7 +12,7 @@ package info.ata4.bsplib;
 
 import info.ata4.bsplib.app.SourceApp;
 import info.ata4.bsplib.app.SourceAppDB;
-import info.ata4.bsplib.contentreader.LumpContentReader;
+import info.ata4.bsplib.contentreader.ContentReader;
 import info.ata4.bsplib.io.LzmaUtil;
 import info.ata4.bsplib.lump.*;
 import info.ata4.bsplib.util.StringMacroUtils;
@@ -880,7 +880,7 @@ public class BspFile {
                 .orElse(true);
     }
 
-    public <T> T readLumpContent(LumpType lumpType, LumpContentReader<T> contentReader)
+    public <T> T readLumpContent(LumpType lumpType, ContentReader<T> contentReader)
             throws LumpContentReadException {
         // don't try to read lumps that aren't supported
         if (!canReadLump(lumpType)) {
@@ -897,7 +897,7 @@ public class BspFile {
 
     }
 
-    public <T> T readGameLumpContent(String sid, LumpContentReader<T> contentReader) throws LumpContentReadException {
+    public <T> T readGameLumpContent(String sid, ContentReader<T> contentReader) throws LumpContentReadException {
         GameLump gameLump = getGameLump(sid);
         if (gameLump == null) {
             throw new LumpContentReadException("Game lump " + sid + " isn't available");
@@ -906,7 +906,7 @@ public class BspFile {
         return readLumpContentInternal(gameLump, contentReader);
     }
 
-    private <T> T readLumpContentInternal(AbstractLump lump, LumpContentReader<T> contentReader)
+    private <T> T readLumpContentInternal(AbstractLump lump, ContentReader<T> contentReader)
             throws LumpContentReadException {
         // don't try to read empty lumps
         if (lump.getLength() == 0) {

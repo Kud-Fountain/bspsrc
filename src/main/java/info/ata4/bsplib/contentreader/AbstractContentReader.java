@@ -1,6 +1,6 @@
 package info.ata4.bsplib.contentreader;
 
-public abstract class AbstractContentReader<T> implements LumpContentReader<T> {
+public abstract class AbstractContentReader<T> implements ContentReader<T> {
 
     private final T nullData;
 
