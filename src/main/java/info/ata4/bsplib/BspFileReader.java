@@ -393,6 +393,9 @@ public class BspFileReader {
     }
 
     private void loadTexDataStrings() {
+        if (bspData.texnames != null) {
+            return;
+        }
 
         List<Integer> stringTableData = readIntegerPacketLump(LumpType.LUMP_TEXDATA_STRING_TABLE);
         bspData.texnames = readLump(LumpType.LUMP_TEXDATA_STRING_DATA,
