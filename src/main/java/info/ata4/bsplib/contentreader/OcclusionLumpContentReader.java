@@ -1,4 +1,4 @@
-package info.ata4.bsplib.lump.contentreader;
+package info.ata4.bsplib.contentreader;
 
 import info.ata4.bsplib.struct.DOccluderData;
 import info.ata4.bsplib.struct.DOccluderPolyData;

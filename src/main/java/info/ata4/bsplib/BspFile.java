@@ -12,9 +12,9 @@ package info.ata4.bsplib;
 
 import info.ata4.bsplib.app.SourceApp;
 import info.ata4.bsplib.app.SourceAppDB;
+import info.ata4.bsplib.contentreader.LumpContentReader;
 import info.ata4.bsplib.io.LzmaUtil;
 import info.ata4.bsplib.lump.*;
-import info.ata4.bsplib.lump.contentreader.LumpContentReader;
 import info.ata4.bsplib.util.StringMacroUtils;
 import info.ata4.io.DataReader;
 import info.ata4.io.DataReaders;

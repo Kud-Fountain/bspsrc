@@ -13,11 +13,11 @@ package info.ata4.bsplib;
 import info.ata4.bsplib.app.SourceApp;
 import info.ata4.bsplib.app.SourceAppDB;
 import info.ata4.bsplib.app.SourceAppID;
+import info.ata4.bsplib.contentreader.*;
 import info.ata4.bsplib.entity.Entity;
 import info.ata4.bsplib.lump.GameLump;
 import info.ata4.bsplib.lump.Lump;
 import info.ata4.bsplib.lump.LumpType;
-import info.ata4.bsplib.lump.contentreader.*;
 import info.ata4.bsplib.struct.*;
 import info.ata4.log.LogUtils;
 

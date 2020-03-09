@@ -1,4 +1,4 @@
-package info.ata4.bsplib.lump.contentreader;
+package info.ata4.bsplib.contentreader;
 
 public abstract class AbstractContentReader<T> implements LumpContentReader<T> {
 
