@@ -20,11 +20,6 @@ public class FlagsLumpContentReader extends AbstractContentReader<Set<LevelFlag>
     @Override
     public Set<LevelFlag> read(DataReader in) throws IOException {
         Set<LevelFlag> mapFlags = EnumConverter.fromInteger(LevelFlag.class, in.readInt());
-
-        if (in.hasRemaining()) {
-            L.warning(String.format("%d bytes remaining", in.remaining()));
-        }
-
         L.fine("Map flags: " + mapFlags);
         return mapFlags;
     }

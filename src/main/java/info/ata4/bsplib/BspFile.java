@@ -918,7 +918,15 @@ public class BspFile {
         try {
             ByteBuffer buffer = lump.getBuffer();
             buffer.rewind();
-            return contentReader.read(DataReaders.forByteBuffer(buffer));
+
+            DataReader dataReader = DataReaders.forByteBuffer(buffer);
+            T data = contentReader.read(dataReader);
+
+            if (dataReader.hasRemaining()) {
+                L.warning(String.format("Lump %s has %d bytes remaining after reading", lump, dataReader.remaining()));
+            }
+
+            return data;
         } catch (Exception e) {
             throw new LumpContentReadException("Error reading lump " + lump, e);
         }
