@@ -364,7 +364,15 @@ public class BspFileReader {
             return;
         }
 
-        bspData.dispmultiblend = readPacketLump(LumpType.LUMP_DISP_MULTIBLEND, DDispMultiBlend::new);
+        // black mesa uses the LUMP_OVERLAY_SYSTEM_LEVELS lump to store multiblend information.
+        // the original purpose of that lump is no longer used
+        LumpType lumpType;
+        if (appID == BLACK_MESA)
+            lumpType = LumpType.LUMP_OVERLAY_SYSTEM_LEVELS;
+        else
+            lumpType = LumpType.LUMP_DISP_MULTIBLEND;
+
+        bspData.dispmultiblend = loadLump(lumpType, DDispMultiBlend.class);
     }
 
     public void loadTexInfo() {
@@ -509,7 +517,11 @@ public class BspFileReader {
 
         // read CPU/GPU levels
         if (bspData.overlaySysLevels == null) {
-            bspData.overlaySysLevels = readPacketLump(LumpType.LUMP_OVERLAY_SYSTEM_LEVELS, DOverlaySystemLevel::new);
+            // black mesa uses this lump for displacement multiblend
+            if (appID == BLACK_MESA)
+                bspData.overlaySysLevels = Collections.emptyList();
+            else
+                bspData.overlaySysLevels = loadLump(LumpType.LUMP_OVERLAY_SYSTEM_LEVELS, DOverlaySystemLevel.class);
         }
     }
 
